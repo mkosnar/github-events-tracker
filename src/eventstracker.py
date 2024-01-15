@@ -19,15 +19,16 @@ class EventsTracker:
                               ) -> dict[str, list[datetime.datetime]]:
         event_time_limit = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=self.event_age_limit)
         data = defaultdict(list)
+        request_url = f'https://api.github.com/repos/{repo}/events?page=1&per_page=100'
         for page in range(1, self.event_page_limit+1):
-            data_page = request_data(repo, page)
-            if not data_page:
-                break
+            data_page, request_url = request_data(request_url)
             for event in data_page:
                 event_time = datetime.datetime.fromisoformat(event['created_at'])
                 if (from_time and event_time < from_time) or event_time < event_time_limit:
                     return dict(data)
                 data[event['type']].append(event_time)
+            if not request_url:
+                break
         return dict(data)
 
     def get_average_event_times(self,
