@@ -16,4 +16,4 @@ app = Flask(__name__)
 
 @app.route("/averages")
 def hello_world():
-    return tracker.get_average_event_times()
+    return tracker.handle_request()
