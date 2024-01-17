@@ -13,6 +13,8 @@ class EventsTracker:
         self.event_page_limit = config.getint('Limits', 'max_pages')
         self.event_age_limit = config.getint('Limits', 'max_days')
         self.repos = config.get('Github', 'repos', fallback='').split(',')
+        self.auth_token = config.get('Github', 'auth_token')
+
         self.cache = CacheData(config.get('General', 'cache_dir_path'))
         self.data = {repo: self.cache.data.get(repo, []) for repo in self.repos}
 
@@ -52,7 +54,7 @@ class EventsTracker:
         ret = list()
         request_url = f'https://api.github.com/repos/{repo}/events?page=1&per_page=100'
         for page in range(self.event_page_limit):
-            data_page, request_url = request_data(request_url)
+            data_page, request_url = request_data(request_url, self.auth_token)
             for event in data_page:
                 event_time = datetime.datetime.fromisoformat(event['created_at'])
                 if event_time <= min_created_at:
