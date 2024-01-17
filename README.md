@@ -1,10 +1,15 @@
 # github-events-tracker
 
+The application generates statistics based on a rolling window of either 7 days or 500 events (customizable in config), whichever is less.
+Specifically, the API will show the average time between consecutive events, separately for each combination of event type and repository name.
+
+Data is cached in memory to minimize the amount of requests to Github API and also in a file to retain data through application restarts.
+
 * Installation
   1. Requirements
      * using pipenv (https://pypi.org/project/pipenv/)
        1. install pipenv
-       2. run `pipenv sync`
+       2. run `pipenv sync` in project root directory
      * else
        * project uses `requests` and `Flask`
   2. Configuration
@@ -14,8 +19,9 @@
      * auth_token - optional Github authorization token, provides private repo access and bigger rate limits
      * repos - tracked repos, `{owner}/{repo}` format, `,` separated list
   3. Run
-     * `flask run` in repo root folder to start server
+     * `flask run` in project root directory to start server
      * output is provided at http://127.0.0.1:5000/averages
+
 
 * output JSON example
 ```json
@@ -48,3 +54,7 @@
     }
 ]
 ```
+
+* possible future work
+  * asynchronous caching
+  * currently, events are checked for uniqueness using the created_at time. it would be better to use event IDs

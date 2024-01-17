@@ -35,7 +35,7 @@ class EventsTracker:
 
     def create_response(self) -> list[dict]:
         """
-        Calculates average event delay and creates a json-y response from stored data.
+        Calculates average event delay and creates a json response from stored data.
 
         Returns:
             output json list
@@ -71,6 +71,7 @@ class EventsTracker:
     def update_data(self):
         """
         Updates data stored in memory with new events retrieved from Github API considering event count + age limits.
+        Only requests events created after the latest event already stored.
         """
         event_count_limit = self.event_page_limit * 100
         event_age_limit = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=self.event_age_limit)
