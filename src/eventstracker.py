@@ -57,14 +57,15 @@ class EventsTracker:
         for repo, events in self.data.items():
             event_times = defaultdict(list)
             for event in events:
-                event_times[event['event_type']].append(event['created_at'])
+                event_times[event['type']].append(event['created_at'])
 
             repo_dict = {'repo': repo,
-                         'average_event_delays': [{'type': event_type, 'average_delay': average_dt_difference(times)}
+                         'average_event_delays': [{'event_type': event_type, 'average_delay': average_dt_difference(times)}
                                                   for event_type, times in event_times.items()
                                                   if len(times) > 1],
                          }
             ret.append(repo_dict)
+
         return ret
 
     def update_data(self):
