@@ -18,20 +18,23 @@ class EventsTracker:
         self.cache = CacheData(config.get('General', 'cache_dir_path'))
         self.data = {repo: self.cache.data.get(repo, []) for repo in self.repos}
 
-    def handle_request(self) -> dict[str, dict[str, float]]:
+    def handle_request(self) -> list[dict]:
         self.update_data()
         return self.create_response()
 
-    def create_response(self) -> dict[str, dict[str, float]]:
-        ret = dict()
+    def create_response(self) -> list[dict]:
+        ret = list()
         for repo, events in self.data.items():
             event_times = defaultdict(list)
             for event in events:
-                event_times[event['type']].append(event['created_at'])
+                event_times[event['event_type']].append(event['created_at'])
 
-            ret[repo] = {event_type: average_dt_difference(times)
-                         for event_type, times in event_times.items()
-                         if len(times) > 1}
+            repo_dict = {'repo': repo,
+                         'average_event_delays': [{'type': event_type, 'average_delay': average_dt_difference(times)}
+                                                  for event_type, times in event_times.items()
+                                                  if len(times) > 1],
+                         }
+            ret.append(repo_dict)
         return ret
 
     def update_data(self):
